@@ -66,7 +66,7 @@ public class Engine {
         try {
             chrome.findElementByXPath(xpaths.get("not_now_button")).click();
         } catch (NoSuchElementException e) {
-            LOG.trace("Popup window after login does noy appear");
+            LOG.trace("Popup window after login does not appear");
         }
     }
 

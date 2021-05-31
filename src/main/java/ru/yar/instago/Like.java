@@ -42,11 +42,11 @@ public class Like {
     private void addAll() {
         searchResult = new ArrayList<>();
         int count = 0;
-        while (count < 5) {
+        while (count < 10) {
             try {
                 engine.waitExactly(1);
                 searchResult.add(chrome
-                        .findElementByXPath((String.format("//*[@id=\"react-root\"]/section/nav/div[2]/div/div/div[2]/div[3]/div/div[2]/div/div[%d]", ++count))));
+                        .findElementByXPath((String.format("//*[@id=\"react-root\"]/section/nav/div[2]/div/div/div[2]/div[3]/div/div[2]/div/div[%d]/a", ++count))));
             } catch (NullPointerException | IllegalArgumentException | NoSuchElementException e) {
                 LOG.trace("Search result list is end");
                 return;
@@ -55,7 +55,10 @@ public class Like {
     }
 
     private void likeItOn() {
-        searchResult.get(0).click();
+
+        for (WebElement webElement : searchResult) {
+            System.out.println(webElement.getAttribute("href"));
+        }
     }
 }
 
