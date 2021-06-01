@@ -86,6 +86,7 @@ public class Engine {
         xpaths.put("login_button", "//*[@id=\"loginForm\"]/div/div[3]/button/div");
         xpaths.put("not_now_button","/html/body/div[4]/div/div/div/div[3]/button[2]");
         xpaths.put("search_after_login","//*[@id=\"react-root\"]/section/nav/div[2]/div/div/div[2]/input");
+        xpaths.put("followers","//*[@id=\"react-root\"]/section/main/div/header/section/ul/li[2]/a");
     }
 
     /**
