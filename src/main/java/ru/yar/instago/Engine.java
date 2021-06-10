@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class Engine {
 
@@ -42,6 +43,8 @@ public class Engine {
     private void browserSetUp() {
         System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
         chrome = new ChromeDriver();
+        chrome.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        //chrome.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
     }
 
     /**
@@ -66,6 +69,7 @@ public class Engine {
     private void firstPopupDisable() {
         try {
             chrome.findElementByXPath(xpaths.get("not_now_button")).click();
+            LOG.trace("Popup window closed");
         } catch (NoSuchElementException e) {
             LOG.trace("Popup window after login does not appear");
         }
@@ -90,9 +94,10 @@ public class Engine {
         xpaths.put("not_now_button", "/html/body/div[4]/div/div/div/div[3]/button[2]");
         xpaths.put("search_after_login", "//*[@id=\"react-root\"]/section/nav/div[2]/div/div/div[2]/input");
         xpaths.put("followers", "//*[@id=\"react-root\"]/section/main/div/header/section/ul/li[2]/a");
-        xpaths.put("follower", "/html/body/div[5]/div/div/div[2]/ul/div/li[%d]/div/div[2]/div[1]/div/div/span/a");
+
         xpaths.put("first_photo", "//*[@id=\"react-root\"]/section/main/div/div[3]/article/div/div/div[1]/div[1]");
         xpaths.put("like_button", "/html/body/div[5]/div[2]/div/article/div[3]/section[1]/span[1]");
+
     }
 
     /**

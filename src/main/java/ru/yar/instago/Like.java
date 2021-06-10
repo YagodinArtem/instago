@@ -2,7 +2,6 @@ package ru.yar.instago;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -30,6 +29,9 @@ public class Like {
 
     private Random random;
 
+    /**
+     * Сколько аккаунтов из списка
+     */
     private int majorAccountsToHandle = 10;
 
     private static final Logger LOG = LogManager.getLogger(Engine.class.getName());
@@ -50,7 +52,8 @@ public class Like {
         addAll();
         addLinks();
 
-        startLiking();
+        start();
+        closeAll();
     }
 
     /**
@@ -65,11 +68,10 @@ public class Like {
             writer = new BufferedWriter(new FileWriter(save, true));
 
             String link = reader.readLine();
-            if (link != null && link.startsWith("http")) {
-                while (link != null) {
-                    wasHandled.add(link);
-                    link = reader.readLine();
-                }
+
+            while (link != null) {
+                wasHandled.add(link);
+                link = reader.readLine();
             }
 
         } catch (IOException e) {
@@ -78,7 +80,9 @@ public class Like {
     }
 
     /**
-     * Start searching by input the search word (prop.properties var mainSearchWord)
+     * Start searching by input the search word (prop.properties var mainSearchWord).
+     *
+     * Начинает первичный поиск главных аккаунтов.
      */
     private void startSearching() {
         chrome.findElementByXPath(engine.getXpaths().get("search_after_login"))
@@ -88,13 +92,15 @@ public class Like {
     }
 
     /**
-     * Find and add all WebElements by xpath (major accounts) to the result List<WebElement>
+     * Find and add all WebElements by xpath (major accounts) to the result List<WebElement>.
+     *
+     * Добавляет все найденные по ключевому слову главные аккаунты в список searchResult;
      */
     private void addAll() {
         int quantity = 0;
+        engine.waitExactly(2);
         while (true) {
             try {
-                engine.waitExactly(1);
                 searchResult.add(chrome
                         .findElementByXPath((String.format("//*[@id=\"react-root\"]/section/nav/div[2]/div/div/div[2]/div[3]/div/div[2]/div/div[%d]/a", ++quantity))));
             } catch (NullPointerException | IllegalArgumentException | NoSuchElementException e) {
@@ -105,7 +111,9 @@ public class Like {
     }
 
     /**
-     * Adds all links from major accounts to List<String> links
+     * Adds all links from major accounts to List<String> links.
+     *
+     * Добавляет все прямые ссылки на главные аккаунты из списка searchResult в список links;
      */
     private void addLinks() {
         for (WebElement webElement : searchResult) links.add(webElement.getAttribute("href"));
@@ -113,20 +121,21 @@ public class Like {
 
 
     /**
-     * Start liking procedure majorAccountsToHandle is the limit to work with
-     *
-     * продумать сохранение текущих данных типа - major link - количество подписечников - на каком остановились
+     * Start liking procedure majorAccountsToHandle is the limit to work with.
+     * <p>
+     * продумать сохранение текущих данных типа - major link - количество подписечников - на каком остановились.
      */
-    private void startLiking() {
+    private void start() {
         likeProcessor.createNewTab();
         int count = 0;
+        String link;
 
         while (count < majorAccountsToHandle) {
-
-            String link = links.get(random.nextInt(links.size()));
+            link = links.get(random.nextInt(links.size()));
             if (!wasHandled.contains(link)) {
                 likeProcessor.startLiking(link);
                 try {
+                    wasHandled.add(link);
                     writer.write(link);
                     writer.write("\n");
                     writer.flush();
@@ -138,10 +147,16 @@ public class Like {
         }
     }
 
+    /**
+     * Close streams and browser driver.
+     *
+     * Закрывает потоки ввода вывода и драйвер браузера.
+     */
     private void closeAll() {
         try {
             reader.close();
             writer.close();
+            chrome.close();
         } catch (IOException e) {
             LOG.error("Unable to close streams");
         }
