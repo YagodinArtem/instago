@@ -18,8 +18,8 @@ public class Engine {
     private Map<String, String> xpaths;
     private Map<String, String> url;
 
-    private final int humanImitation = 7;
-    private final int basic = 2;
+    private final int humanImitation = 3;
+    private final int basic = 1;
     private final Random random;
 
     private static final Logger LOG = LogManager.getLogger(Engine.class.getName());
@@ -44,7 +44,6 @@ public class Engine {
         System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
         chrome = new ChromeDriver();
         chrome.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-        //chrome.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
     }
 
     /**
@@ -58,7 +57,7 @@ public class Engine {
         chrome.findElementByName("password").sendKeys(ps.getPassword());
         waitExactly(3);
         chrome.findElementByXPath(xpaths.get("login_button")).click();
-        waitExactly(3);
+        waitExactly(5);
         LOG.trace("Login succeed");
         firstPopupDisable();
     }
@@ -92,12 +91,7 @@ public class Engine {
         xpaths = new HashMap<>();
         xpaths.put("login_button", "//*[@id=\"loginForm\"]/div/div[3]/button/div");
         xpaths.put("not_now_button", "/html/body/div[4]/div/div/div/div[3]/button[2]");
-        xpaths.put("search_after_login", "//*[@id=\"react-root\"]/section/nav/div[2]/div/div/div[2]/input");
-        xpaths.put("followers", "//*[@id=\"react-root\"]/section/main/div/header/section/ul/li[2]/a");
-
-        xpaths.put("first_photo", "//*[@id=\"react-root\"]/section/main/div/div[3]/article/div/div/div[1]/div[1]");
         xpaths.put("like_button", "/html/body/div[5]/div[2]/div/article/div[3]/section[1]/span[1]");
-
     }
 
     /**
@@ -121,7 +115,6 @@ public class Engine {
             LOG.error("InterruptedException humanImitation" + Arrays.toString(e.getStackTrace()));
         }
     }
-
 
     public Map<String, String> getXpaths() {
         return xpaths;

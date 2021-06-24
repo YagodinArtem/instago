@@ -2,10 +2,7 @@ package ru.yar.instago;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.util.ArrayList;
@@ -20,6 +17,7 @@ public class LikeProcessor {
     private ChromeDriver chrome;
     private ArrayList<String> tabs;
     private Set<String> subscribersAccLinks;
+    private Set<String> handledLinks;
 
     /** photosToLike
      * How many photos will be liked
@@ -35,8 +33,9 @@ public class LikeProcessor {
     private int scrollCount = 1;
 
     /** cycleLimit
-     * How many cycles will be performed ON each MAJOR account ( each cycle about 300-320 subscribers )
-     * Определяет какое количество циклов будем производить над аккаунтом ( каждый цикл брабатывает около 300-320 подписчиков)
+     * How many cycles will be performed ON each MAJOR account
+     * Определяет какое количество циклов будем производить над аккаунтом ( каждый цикл брабатывает scrollCount * 12 подписчиков)
+     * например, если scrollCount = 5 и cycleLimit = 5, 5 раз будет обработано 5 * 12 (60) подписчиков.
      */
     private int cycleLimit = 5;
 
@@ -47,6 +46,7 @@ public class LikeProcessor {
         this.engine = engine;
         this.chrome = chrome;
         subscribersAccLinks = new HashSet<>();
+        handledLinks = new HashSet<>();
     }
 
     /**
@@ -54,12 +54,27 @@ public class LikeProcessor {
      * @param majorLink на главный аккаунт
      */
     public void startLiking(String majorLink) {
+        chrome.switchTo().window(tabs.get(0));
         chrome.get(majorLink);
+        boolean isClicked = false;
         try {
-            chrome.findElementByXPath(engine.getXpaths().get("followers")).click();
-        } catch (NoSuchElementException e) {
-            LOG.trace("majorLink: " + majorLink + " - does not have any subscribers");
+            for (WebElement w : chrome.findElements(By.tagName("a"))) {
+                if (w.getAttribute("href").contains("followers")
+                        && !w.findElement(By.tagName("span")).getAttribute("title").equals("0")) {
+                    engine.waitExactly(1);
+                    w.click();
+                    isClicked = true;
+                }
+            }
+            if (!isClicked) {
+                LOG.trace("Не могу найти подписчиков у : " + majorLink);
+                throw new NoSuchElementException("Не могу найти подписчиков");
+            }
+        } catch (NoSuchElementException | NullPointerException e) {
+            LOG.trace("majorLink: " + majorLink + " - does not have any subscribers (NoSuchElem | NullPointer");
             return;
+        } catch (ElementClickInterceptedException e) {
+            LOG.trace("element click intercepted");
         }
 
         for (int i = 0; i < cycleLimit; i++) {
@@ -67,8 +82,10 @@ public class LikeProcessor {
             getSubscribersHrefs();
 
             for (String subscriber : subscribersAccLinks) {
-                if (subscriber.contains("www.instagram.com"))
-                likeTenSubscriberPhoto(subscriber);
+                if (subscriber.contains("www.instagram.com")) {
+                    likeTenSubscriberPhoto(subscriber);
+                }
+                handledLinks.add(subscriber);
             }
         }
 
@@ -78,15 +95,18 @@ public class LikeProcessor {
      * Получает список WebElement по тегу <a> ... </a>
      * внутри которого находит и добавляет в список subscribersAccLinks прямую ссылку на страницу подписчика
      */
-    //TODO сам себя удаляет! реализовать через два списка
+
     private void getSubscribersHrefs() {
         chrome.switchTo().window(tabs.get(0));
+        subscribersAccLinks.clear();
         List<WebElement> aTag = chrome.findElements(By.tagName("a"));
         for (WebElement aClass : aTag) {
-            if (subscribersAccLinks.contains(aClass.getAttribute("href"))) {
-                subscribersAccLinks.remove(aClass.getAttribute("href"));
-            } else {
-                subscribersAccLinks.add(aClass.getAttribute("href"));
+            try {
+                if (!handledLinks.contains(aClass.getAttribute("href"))) {
+                    subscribersAccLinks.add(aClass.getAttribute("href"));
+                }
+            } catch (StaleElementReferenceException e) {
+                LOG.trace("element /href is not attached to the page document");
             }
         }
         LOG.trace("Добавлено " + subscribersAccLinks.size() + " ссылок подписчиков");
@@ -113,16 +133,20 @@ public class LikeProcessor {
     }
 
     /**
-     * Find first photo in profile
+     * Find photo in profile
      *
      * @return true if founded
      */
     private boolean findFirst() {
+        String cName = "_9AhH0";
         try {
-            chrome.findElementByXPath(engine.getXpaths().get("first_photo")).click();
+            chrome.findElement(By.className(cName)).click();
             return true;
-        } catch (NoSuchElementException ex) {
-            LOG.trace("Unable to find any photos");
+        } catch (NoSuchElementException e) {
+            LOG.trace("Classname не найден - " + cName);
+            return false;
+        } catch (ElementNotInteractableException e) {
+            LOG.trace("Элемент не интерактивен - " + cName);
             return false;
         }
     }
@@ -132,6 +156,7 @@ public class LikeProcessor {
      */
     private void likeCurrent() {
         try {
+            engine.humanImitation();
             WebElement likeButton = chrome.findElementByXPath(engine.getXpaths().get("like_button"));
             if (!likeButton
                     .findElement(By.tagName("svg"))
@@ -139,7 +164,7 @@ public class LikeProcessor {
                 likeButton.click();
             }
         } catch (NoSuchElementException e) {
-            LOG.error("Не могу найти кнопку лайк! Страница не грузится");
+            LOG.error("Не могу найти кнопку лайк! Возможно не загрузилась страница");
         }
     }
 
@@ -166,14 +191,13 @@ public class LikeProcessor {
             count++;
             if (count > scrollCount) return;
         }
-
     }
 
     /**
      * Прокрутить единожды
      */
     private void scrollDownOnce() {
-        engine.waitExactly(1);
+        engine.waitExactly(2);
         ((JavascriptExecutor) chrome)
                 .executeScript("arguments[0].scrollBy(0,500)",
                         chrome.findElement(By.className("isgrP")));

@@ -2,6 +2,7 @@ package ru.yar.instago;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -30,7 +31,7 @@ public class Like {
     private Random random;
 
     /**
-     * Сколько аккаунтов из списка
+     * Сколько главных аккаунтов из списка будем обрабатывать
      */
     private int majorAccountsToHandle = 10;
 
@@ -40,7 +41,6 @@ public class Like {
         this.engine = engine;
         this.chrome = chrome;
         random = new Random();
-        searchResult = new ArrayList<>();
         wasHandled = new ArrayList<>();
         links = new ArrayList<>();
 
@@ -85,7 +85,7 @@ public class Like {
      * Начинает первичный поиск главных аккаунтов.
      */
     private void startSearching() {
-        chrome.findElementByXPath(engine.getXpaths().get("search_after_login"))
+        chrome.findElement(By.tagName("input"))
                 .sendKeys(engine
                         .getPs()
                         .getMainSearchWord());
@@ -97,17 +97,8 @@ public class Like {
      * Добавляет все найденные по ключевому слову главные аккаунты в список searchResult;
      */
     private void addAll() {
-        int quantity = 0;
         engine.waitExactly(2);
-        while (true) {
-            try {
-                searchResult.add(chrome
-                        .findElementByXPath((String.format("//*[@id=\"react-root\"]/section/nav/div[2]/div/div/div[2]/div[3]/div/div[2]/div/div[%d]/a", ++quantity))));
-            } catch (NullPointerException | IllegalArgumentException | NoSuchElementException e) {
-                LOG.trace("Added " + quantity + " search results");
-                return;
-            }
-        }
+        searchResult = chrome.findElements(By.tagName("a"));
     }
 
     /**
