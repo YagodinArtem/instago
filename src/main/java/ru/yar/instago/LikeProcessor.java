@@ -18,6 +18,12 @@ public class LikeProcessor {
     private ArrayList<String> tabs;
     private Set<String> subscribersAccLinks;
     private Set<String> handledLinks;
+    private Like like;
+
+    /** dayPermission
+     * вероятное допустимое количество лайков в день
+     */
+    private int dayPermission = 300;
 
     /** photosToLike
      * How many photos will be liked
@@ -41,8 +47,11 @@ public class LikeProcessor {
 
     private static final Logger LOG = LogManager.getLogger(Engine.class.getName());
 
+    private static int likeCount = 0;
 
-    public LikeProcessor(Engine engine, ChromeDriver chrome) {
+
+    public LikeProcessor(Engine engine, ChromeDriver chrome, Like like) {
+        this.like = like;
         this.engine = engine;
         this.chrome = chrome;
         subscribersAccLinks = new HashSet<>();
@@ -148,6 +157,9 @@ public class LikeProcessor {
         } catch (ElementNotInteractableException e) {
             LOG.trace("Элемент не интерактивен - " + cName);
             return false;
+        } catch (StaleElementReferenceException e) {
+            LOG.trace("Элемент не прикреплен к странице");
+            return false;
         }
     }
 
@@ -162,6 +174,12 @@ public class LikeProcessor {
                     .findElement(By.tagName("svg"))
                     .getAttribute("fill").equals("#ed4956")) {
                 likeButton.click();
+                System.out.println(++likeCount);
+                if (likeCount > dayPermission) {
+                    LOG.trace("Поставили " + dayPermission + " лайков, приложение заввершает работу");
+                    like.closeAll();
+                    System.exit(0);
+                }
             }
         } catch (NoSuchElementException e) {
             LOG.error("Не могу найти кнопку лайк! Возможно не загрузилась страница");

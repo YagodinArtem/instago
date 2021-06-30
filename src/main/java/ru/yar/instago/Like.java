@@ -44,7 +44,7 @@ public class Like {
         wasHandled = new ArrayList<>();
         links = new ArrayList<>();
 
-        likeProcessor = new LikeProcessor(engine, chrome);
+        likeProcessor = new LikeProcessor(engine, chrome, this);
 
         initializeWork();
 
@@ -143,9 +143,10 @@ public class Like {
      *
      * Закрывает потоки ввода вывода и драйвер браузера.
      */
-    private void closeAll() {
+    public void closeAll() {
         try {
             reader.close();
+            writer.flush();
             writer.close();
             chrome.close();
         } catch (IOException e) {
