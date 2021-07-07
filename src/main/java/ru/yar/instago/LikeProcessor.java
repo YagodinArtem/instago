@@ -23,7 +23,7 @@ public class LikeProcessor {
     /** dayPermission
      * вероятное допустимое количество лайков в день
      */
-    private int dayPermission = 300;
+    private int dayPermission = 500;
 
     /** photosToLike
      * How many photos will be liked
@@ -203,7 +203,11 @@ public class LikeProcessor {
      */
     private void scrollDown() {
         int count = 0;
-        chrome.switchTo().window(tabs.get(0));
+        try {
+            chrome.switchTo().window(tabs.get(0));
+        } catch (NoSuchWindowException e) {
+            LOG.error("tabs.get(0) error");
+        }
         while (((JavascriptExecutor) chrome).executeScript("return document.readyState").equals("complete")) {
             scrollDownOnce();
             count++;
