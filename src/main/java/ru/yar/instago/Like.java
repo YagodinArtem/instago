@@ -85,10 +85,14 @@ public class Like {
      * Начинает первичный поиск главных аккаунтов.
      */
     private void startSearching() {
-        chrome.findElement(By.tagName("input"))
-                .sendKeys(engine
-                        .getPs()
-                        .getMainSearchWord());
+        try {
+            chrome.findElement(By.tagName("input"))
+                    .sendKeys(engine
+                            .getPs()
+                            .getMainSearchWord());
+        } catch (NoSuchElementException e) {
+           LOG.error("NoSuch " + e);
+        }
     }
 
     /**
@@ -99,6 +103,7 @@ public class Like {
     private void addAll() {
         engine.waitExactly(2);
         searchResult = chrome.findElements(By.tagName("a"));
+        engine.sendLogMsg("Главных страниц найдено по запросу: " + searchResult.size());
     }
 
     /**

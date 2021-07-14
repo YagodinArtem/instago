@@ -23,7 +23,7 @@ public class LikeProcessor {
     /** dayPermission
      * вероятное допустимое количество лайков в день
      */
-    private int dayPermission = 500;
+    private long dayPermission = 500;
 
     /** photosToLike
      * How many photos will be liked
@@ -54,6 +54,7 @@ public class LikeProcessor {
         this.like = like;
         this.engine = engine;
         this.chrome = chrome;
+        dayPermission = engine.getPs().getLikeCount();
         subscribersAccLinks = new HashSet<>();
         handledLinks = new HashSet<>();
     }
@@ -119,6 +120,7 @@ public class LikeProcessor {
             }
         }
         LOG.trace("Добавлено " + subscribersAccLinks.size() + " ссылок подписчиков");
+        engine.sendLogMsg("Добавлено " + subscribersAccLinks.size() + " ссылок подписчиков");
     }
 
     /**
@@ -174,7 +176,8 @@ public class LikeProcessor {
                     .findElement(By.tagName("svg"))
                     .getAttribute("fill").equals("#ed4956")) {
                 likeButton.click();
-                System.out.println(++likeCount);
+                ++likeCount;
+                engine.sendLogMsg("Всего лайков: " + likeCount);
                 if (likeCount > dayPermission) {
                     LOG.trace("Поставили " + dayPermission + " лайков, приложение заввершает работу");
                     like.closeAll();

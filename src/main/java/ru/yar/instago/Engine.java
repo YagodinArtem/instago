@@ -1,14 +1,16 @@
 package ru.yar.instago;
 
+import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import ru.App;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import javax.security.auth.login.LoginException;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Engine {
@@ -24,8 +26,19 @@ public class Engine {
 
     private static final Logger LOG = LogManager.getLogger(Engine.class.getName());
 
-    public Engine() {
+    public Engine(String login, String pswrd, String searchWord, long likeCount) {
+        LOG.trace("Start the program");
+        random = new Random();
+        ps = new PrimarySettings(login, pswrd, searchWord, likeCount);
+        browserSetUp();
+        urlInit();
+        xpathsInit();
+        login();
+        new Like(this, chrome);
+    }
 
+
+    public Engine() {
         LOG.trace("Start the program");
         random = new Random();
         ps = new PrimarySettings();
@@ -34,6 +47,7 @@ public class Engine {
         xpathsInit();
         login();
         new Like(this, chrome);
+
     }
 
 
@@ -50,16 +64,25 @@ public class Engine {
      * Login to instagram
      */
     private void login() {
-        chrome.get(url.get("login"));
-        waitExactly(3);
-        chrome.findElementByName("username").sendKeys(ps.getLogin());
-        waitExactly(3);
-        chrome.findElementByName("password").sendKeys(ps.getPassword());
-        waitExactly(3);
-        chrome.findElementByXPath(xpaths.get("login_button")).click();
-        waitExactly(5);
-        LOG.trace("Login succeed");
-        firstPopupDisable();
+        try {
+            chrome.get(url.get("login"));
+            waitExactly(3);
+            chrome.findElementByName("username").sendKeys(ps.getLogin());
+            waitExactly(3);
+            chrome.findElementByName("password").sendKeys(ps.getPassword());
+            waitExactly(3);
+            chrome.findElementByXPath(xpaths.get("login_button")).click();
+            waitExactly(5);
+
+            chrome.findElement(By.id("slfErrorAlert"));
+            sendLogMsg("Логин - неудача.");
+            chrome.close();
+            Thread.currentThread().stop();
+
+        } catch (NoSuchElementException e) {
+            firstPopupDisable();
+            sendLogMsg("Логин - успех.");
+        }
     }
 
     /**
@@ -126,5 +149,9 @@ public class Engine {
 
     public PrimarySettings getPs() {
         return ps;
+    }
+
+    public void sendLogMsg(String msg) {
+        Platform.runLater(() -> App.controller.guiLOG.appendText(new Date() + ": " + msg + "\r\n"));
     }
 }
