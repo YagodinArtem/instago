@@ -1,1 +1,1 @@
-Command: mvn clean package assembly:singe
+Command: mvn clean package assembly:single

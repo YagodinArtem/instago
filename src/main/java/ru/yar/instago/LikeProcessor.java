@@ -120,7 +120,7 @@ public class LikeProcessor {
             }
         }
         LOG.trace("Добавлено " + subscribersAccLinks.size() + " ссылок подписчиков");
-        engine.sendLogMsg("Добавлено " + subscribersAccLinks.size() + " ссылок подписчиков");
+        engine.sendLogMsg("Added " + subscribersAccLinks.size() + " links of target subscribers");
     }
 
     /**
