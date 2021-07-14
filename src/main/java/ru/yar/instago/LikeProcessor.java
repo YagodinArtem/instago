@@ -177,7 +177,7 @@ public class LikeProcessor {
                     .getAttribute("fill").equals("#ed4956")) {
                 likeButton.click();
                 ++likeCount;
-                engine.sendLogMsg("Всего лайков: " + likeCount);
+                engine.sendLogMsg("Likes count: " + likeCount);
                 if (likeCount > dayPermission) {
                     LOG.trace("Поставили " + dayPermission + " лайков, приложение заввершает работу");
                     like.closeAll();

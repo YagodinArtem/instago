@@ -6,6 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import ru.App;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -62,8 +63,11 @@ public class Like {
      * followers from such link it will no be able.
      */
     private void initializeWork() {
-        save = new File("src/main/resources/save.txt");
+        save = new File(App.controller.dir.getPath() + "/save.txt");
         try {
+            if (!save.exists()) {
+                save.createNewFile();
+            }
             reader = new BufferedReader(new FileReader(save));
             writer = new BufferedWriter(new FileWriter(save, true));
 
@@ -103,7 +107,7 @@ public class Like {
     private void addAll() {
         engine.waitExactly(2);
         searchResult = chrome.findElements(By.tagName("a"));
-        engine.sendLogMsg("Главных страниц найдено по запросу: " + searchResult.size());
+        engine.sendLogMsg("Main page founded: " + searchResult.size());
     }
 
     /**

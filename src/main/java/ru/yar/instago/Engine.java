@@ -4,12 +4,12 @@ import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import ru.App;
 
-import javax.security.auth.login.LoginException;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -55,7 +55,42 @@ public class Engine {
      * Setups for browser (chrome)
      */
     private void browserSetUp() {
-        System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
+        String path = App.controller.dir.getPath() + "/chromedriver.exe";
+        InputStream is;
+        BufferedInputStream bis;
+        BufferedOutputStream bos;
+        try {
+            is = Engine.class.getResourceAsStream("/chromedriver.exe");
+            bis = new BufferedInputStream(is);
+            File chromedriver = new File(path);
+            if (!chromedriver.exists()) {
+                sendLogMsg("Installing chromedriver.exe...");
+                bos = new BufferedOutputStream(new FileOutputStream(chromedriver));
+                int bsize = 2048;
+                int n = 0;
+
+                byte[] buffer = new byte[bsize];
+
+                while ((n = bis.read(buffer, 0, bsize)) != -1) {
+                    bos.write(buffer, 0, n);
+                }
+
+                bos.flush();
+                try {
+                    bis.close();
+                    bos.close();
+                    is.close();
+                } catch (IOException e) {
+                    LOG.error("Unable to close streams");
+                }
+                sendLogMsg("Install chromedriver.exe complete.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            LOG.error("Unable to install chromedriver");
+        }
+
+        System.setProperty("webdriver.chrome.driver", path);
         chrome = new ChromeDriver();
         chrome.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
@@ -75,13 +110,17 @@ public class Engine {
             waitExactly(5);
 
             chrome.findElement(By.id("slfErrorAlert"));
-            sendLogMsg("Логин - неудача.");
+            sendLogMsg("Login - failed.");
             chrome.close();
             Thread.currentThread().stop();
 
         } catch (NoSuchElementException e) {
             firstPopupDisable();
-            sendLogMsg("Логин - успех.");
+            sendLogMsg("Login - succeed.");
+        } catch (ElementClickInterceptedException e) {
+            sendLogMsg("Login - failed.");
+            chrome.close();
+            Thread.currentThread().stop();
         }
     }
 

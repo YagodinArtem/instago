@@ -22,13 +22,31 @@ public class Controller implements Initializable {
     public TextField likesCount;
     public TextArea guiLOG;
     private Properties prop;
+    private File file;
+    public File dir;
+    private String filePath;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         prop = new Properties();
+        dir = new File(System.getProperty("user.home") + "/" + "instago");
+        filePath = System.getProperty("user.home") + "/" + dir.getName() + "/prop.properties";
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
         try {
-            prop.load(new FileInputStream("src/main/resources/prop.properties"));
+            file = new File(filePath);
+
+            if (!file.exists()) {
+                file.createNewFile();
+                prop.put("login", "");
+                prop.put("password", "");
+                prop.put("mainSearchWord", "");
+                storeProp();
+            } else {
+                prop.load(new FileInputStream(filePath));
+            }
             if (!prop.getProperty("login").equals("")
                     && !prop.getProperty("password").equals("")
                     && !prop.getProperty("mainSearchWord").equals("")) {
@@ -48,7 +66,7 @@ public class Controller implements Initializable {
                     searchWordField.getText(),
                     Long.parseLong(likesCount.getText()))).start();
         } else {
-            guiLOG.appendText("Неверные данные для входа!\r\n" );
+            guiLOG.appendText("Неверные данные для входа!\r\n");
         }
     }
 
@@ -71,7 +89,10 @@ public class Controller implements Initializable {
         prop.setProperty("password", "");
         prop.setProperty("mainSearchWord", "");
 
-        File file = new File("src/main/resources/prop.properties");
+        storeProp();
+    }
+
+    private void storeProp() {
         try {
             FileOutputStream fos = new FileOutputStream(file);
             prop.store(fos, "");
@@ -90,15 +111,7 @@ public class Controller implements Initializable {
             prop.setProperty("password", passwordField.getText());
             prop.setProperty("mainSearchWord", searchWordField.getText());
 
-            File file = new File("src/main/resources/prop.properties");
-            try {
-                FileOutputStream fos = new FileOutputStream(file);
-                prop.store(fos, "");
-                fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+            storeProp();
         }
     }
 }

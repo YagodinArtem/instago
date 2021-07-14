@@ -1,0 +1,1 @@
+Command: mvn clean package assembly:singe
