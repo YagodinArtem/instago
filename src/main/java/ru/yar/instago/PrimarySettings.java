@@ -14,8 +14,16 @@ public class PrimarySettings {
     private final String propertiesFileName = "prop.properties";
 
     private String mainSearchWord;
+    private long likeCount;
 
     private static final Logger LOG = LogManager.getLogger(Engine.class.getName());
+
+    public PrimarySettings(String login, String password, String mainSearchWord, long likeCount) {
+        this.login = login;
+        this.password = password;
+        this.mainSearchWord = mainSearchWord;
+        this.likeCount = likeCount;
+    }
 
     public PrimarySettings() {
 
@@ -41,5 +49,9 @@ public class PrimarySettings {
 
     public String getMainSearchWord() {
         return mainSearchWord;
+    }
+
+    public long getLikeCount() {
+        return likeCount;
     }
 }

@@ -1,14 +1,16 @@
 package ru.yar.instago;
 
+import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
+import ru.App;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Engine {
@@ -24,11 +26,10 @@ public class Engine {
 
     private static final Logger LOG = LogManager.getLogger(Engine.class.getName());
 
-    public Engine() {
-
+    public Engine(String login, String pswrd, String searchWord, long likeCount) {
         LOG.trace("Start the program");
         random = new Random();
-        ps = new PrimarySettings();
+        ps = new PrimarySettings(login, pswrd, searchWord, likeCount);
         browserSetUp();
         urlInit();
         xpathsInit();
@@ -37,11 +38,59 @@ public class Engine {
     }
 
 
+    public Engine() {
+        LOG.trace("Start the program");
+        random = new Random();
+        ps = new PrimarySettings();
+        browserSetUp();
+        urlInit();
+        xpathsInit();
+        login();
+        new Like(this, chrome);
+
+    }
+
+
     /**
      * Setups for browser (chrome)
      */
     private void browserSetUp() {
-        System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
+        String path = App.controller.dir.getPath() + "/chromedriver.exe";
+        InputStream is;
+        BufferedInputStream bis;
+        BufferedOutputStream bos;
+        try {
+            is = Engine.class.getResourceAsStream("/chromedriver.exe");
+            bis = new BufferedInputStream(is);
+            File chromedriver = new File(path);
+            if (!chromedriver.exists()) {
+                sendLogMsg("Installing chromedriver.exe...");
+                bos = new BufferedOutputStream(new FileOutputStream(chromedriver));
+                int bsize = 2048;
+                int n = 0;
+
+                byte[] buffer = new byte[bsize];
+
+                while ((n = bis.read(buffer, 0, bsize)) != -1) {
+                    bos.write(buffer, 0, n);
+                }
+
+                bos.flush();
+                try {
+                    bis.close();
+                    bos.close();
+                    is.close();
+                } catch (IOException e) {
+                    LOG.error("Unable to close streams");
+                }
+                sendLogMsg("Install chromedriver.exe complete.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            LOG.error("Unable to install chromedriver");
+        }
+
+        System.setProperty("webdriver.chrome.driver", path);
         chrome = new ChromeDriver();
         chrome.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
@@ -50,16 +99,29 @@ public class Engine {
      * Login to instagram
      */
     private void login() {
-        chrome.get(url.get("login"));
-        waitExactly(3);
-        chrome.findElementByName("username").sendKeys(ps.getLogin());
-        waitExactly(3);
-        chrome.findElementByName("password").sendKeys(ps.getPassword());
-        waitExactly(3);
-        chrome.findElementByXPath(xpaths.get("login_button")).click();
-        waitExactly(5);
-        LOG.trace("Login succeed");
-        firstPopupDisable();
+        try {
+            chrome.get(url.get("login"));
+            waitExactly(3);
+            chrome.findElementByName("username").sendKeys(ps.getLogin());
+            waitExactly(3);
+            chrome.findElementByName("password").sendKeys(ps.getPassword());
+            waitExactly(3);
+            chrome.findElementByXPath(xpaths.get("login_button")).click();
+            waitExactly(5);
+
+            chrome.findElement(By.id("slfErrorAlert"));
+            sendLogMsg("Login - failed.");
+            chrome.close();
+            Thread.currentThread().stop();
+
+        } catch (NoSuchElementException e) {
+            firstPopupDisable();
+            sendLogMsg("Login - succeed.");
+        } catch (ElementClickInterceptedException e) {
+            sendLogMsg("Login - failed.");
+            chrome.close();
+            Thread.currentThread().stop();
+        }
     }
 
     /**
@@ -126,5 +188,9 @@ public class Engine {
 
     public PrimarySettings getPs() {
         return ps;
+    }
+
+    public void sendLogMsg(String msg) {
+        Platform.runLater(() -> App.controller.guiLOG.appendText(new Date() + ": " + msg + "\r\n"));
     }
 }
