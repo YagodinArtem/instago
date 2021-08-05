@@ -8,6 +8,7 @@ import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import ru.App;
+import ru.yar.instago.like.Like;
 
 import java.io.*;
 import java.util.*;
@@ -153,7 +154,6 @@ public class Engine {
         xpaths = new HashMap<>();
         xpaths.put("login_button", "//*[@id=\"loginForm\"]/div/div[3]/button/div");
         xpaths.put("not_now_button", "/html/body/div[4]/div/div/div/div[3]/button[2]");
-        xpaths.put("like_button", "/html/body/div[5]/div[2]/div/article/div[3]/section[1]/span[1]");
     }
 
     /**

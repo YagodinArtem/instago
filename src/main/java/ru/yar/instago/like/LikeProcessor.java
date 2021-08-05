@@ -1,9 +1,10 @@
-package ru.yar.instago;
+package ru.yar.instago.like;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import ru.yar.instago.Engine;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -171,8 +172,9 @@ public class LikeProcessor {
     private void likeCurrent() {
         try {
             engine.humanImitation();
-            WebElement likeButton = chrome.findElementByXPath(engine.getXpaths().get("like_button"));
+            WebElement likeButton = chrome.findElementByClassName("fr66n"); //span
             if (!likeButton
+                    .findElement(By.tagName("button")) //button in span
                     .findElement(By.tagName("svg"))
                     .getAttribute("fill").equals("#ed4956")) {
                 likeButton.click();
@@ -185,6 +187,7 @@ public class LikeProcessor {
                 }
             }
         } catch (NoSuchElementException e) {
+            e.printStackTrace();
             LOG.error("Не могу найти кнопку лайк! Возможно не загрузилась страница");
         }
     }

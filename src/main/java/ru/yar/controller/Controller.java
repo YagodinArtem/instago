@@ -71,6 +71,7 @@ public class Controller implements Initializable {
     }
 
     public void stop(ActionEvent event) {
+        System.exit(0);
     }
 
     public void info(ActionEvent event) {
