@@ -9,6 +9,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import ru.App;
 import ru.yar.instago.like.Like;
+import ru.yar.instago.message.Message;
 
 import java.io.*;
 import java.util.*;
@@ -28,7 +29,7 @@ public class Engine {
     private static final Logger LOG = LogManager.getLogger(Engine.class.getName());
 
     public Engine(String login, String pswrd, String searchWord, long likeCount) {
-        LOG.trace("Start the program");
+        LOG.trace("Start liking");
         random = new Random();
         ps = new PrimarySettings(login, pswrd, searchWord, likeCount);
         browserSetUp();
@@ -38,7 +39,21 @@ public class Engine {
         new Like(this, chrome);
     }
 
+    public Engine(String login, String pswrd, String message) {
+        LOG.trace("Start messaging");
+        random = new Random();
+        ps = new PrimarySettings(login, pswrd, message);
+        browserSetUp();
+        urlInit();
+        xpathsInit();
+        login();
+        new Message(this, chrome);
+    }
 
+
+    /**
+     * Не используется в gui версии приложения.
+     */
     public Engine() {
         LOG.trace("Start the program");
         random = new Random();

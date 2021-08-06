@@ -21,6 +21,7 @@ public class Controller implements Initializable {
     public TextField searchWordField;
     public TextField likesCount;
     public TextArea guiLOG;
+    public TextArea userMessage;
     private Properties prop;
     private File file;
     public File dir;
@@ -43,28 +44,38 @@ public class Controller implements Initializable {
                 prop.put("login", "");
                 prop.put("password", "");
                 prop.put("mainSearchWord", "");
+                prop.put("message", "");
                 storeProp();
             } else {
                 prop.load(new FileInputStream(filePath));
             }
             if (!prop.getProperty("login").equals("")
-                    && !prop.getProperty("password").equals("")
-                    && !prop.getProperty("mainSearchWord").equals("")) {
+                    && !prop.getProperty("password").equals("")) {
                 loginField.setText(prop.getProperty("login"));
                 passwordField.setText(prop.getProperty("password"));
                 searchWordField.setText(prop.getProperty("mainSearchWord"));
+                userMessage.setText(prop.getProperty("message"));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void start(ActionEvent event) {
+    public void startLike(ActionEvent event) {
         if (checkAll()) {
             new Thread(() -> new Engine(loginField.getText(),
                     passwordField.getText(),
                     searchWordField.getText(),
                     Long.parseLong(likesCount.getText()))).start();
+        } else {
+            guiLOG.appendText("Неверные данные для входа!\r\n");
+        }
+    }
+
+    public void startMessage(ActionEvent event) {
+        if (checkLoginPswAndMessage()) {
+            new Thread(() -> new Engine(loginField.getText(),
+                    passwordField.getText(), userMessage.getText())).start();
         } else {
             guiLOG.appendText("Неверные данные для входа!\r\n");
         }
@@ -78,11 +89,17 @@ public class Controller implements Initializable {
 
     }
 
-    private boolean checkAll() {
-        return !passwordField.getText().equals("")
-                && !loginField.getText().equals("")
-                && !searchWordField.getText().equals("")
-                && !likesCount.getText().equals("");
+    public void save(ActionEvent event) {
+        if (!passwordField.getText().equals("")
+                && !loginField.getText().equals("")) {
+
+            prop.setProperty("login", loginField.getText());
+            prop.setProperty("password", passwordField.getText());
+            prop.setProperty("mainSearchWord", searchWordField.getText());
+            prop.setProperty("message", userMessage.getText());
+
+            storeProp();
+        }
     }
 
     public void delete(ActionEvent event) {
@@ -93,6 +110,19 @@ public class Controller implements Initializable {
         storeProp();
     }
 
+    private boolean checkLoginPswAndMessage() {
+        return !passwordField.getText().equals("")
+                && !loginField.getText().equals("")
+                && !userMessage.getText().equals("");
+    }
+
+    private boolean checkAll() {
+        return !passwordField.getText().equals("")
+                && !loginField.getText().equals("")
+                && !searchWordField.getText().equals("")
+                && !likesCount.getText().equals("");
+    }
+
     private void storeProp() {
         try {
             FileOutputStream fos = new FileOutputStream(file);
@@ -100,19 +130,6 @@ public class Controller implements Initializable {
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    public void save(ActionEvent event) {
-        if (!passwordField.getText().equals("")
-                && !loginField.getText().equals("")
-                && !searchWordField.getText().equals("")) {
-
-            prop.setProperty("login", loginField.getText());
-            prop.setProperty("password", passwordField.getText());
-            prop.setProperty("mainSearchWord", searchWordField.getText());
-
-            storeProp();
         }
     }
 }

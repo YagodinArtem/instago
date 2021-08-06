@@ -14,6 +14,7 @@ public class PrimarySettings {
     private final String propertiesFileName = "prop.properties";
 
     private String mainSearchWord;
+    private String message;
     private long likeCount;
 
     private static final Logger LOG = LogManager.getLogger(Engine.class.getName());
@@ -25,8 +26,13 @@ public class PrimarySettings {
         this.likeCount = likeCount;
     }
 
-    public PrimarySettings() {
+    public PrimarySettings(String login, String password, String message) {
+        this.login = login;
+        this.password = password;
+        this.message = message;
+    }
 
+    public PrimarySettings() {
         try (FileReader reader = new FileReader(String.format("src/main/resources/%s", propertiesFileName))){
             Properties p = new Properties();
             p.load(reader);
@@ -53,5 +59,9 @@ public class PrimarySettings {
 
     public long getLikeCount() {
         return likeCount;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }
