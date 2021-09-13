@@ -22,11 +22,11 @@ public class Controller implements Initializable {
     public TextField likesCount;
     public TextArea guiLOG;
     public TextArea userMessage;
+    public TextField messageCount;
     private Properties prop;
     private File file;
     public File dir;
     private String filePath;
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -61,7 +61,7 @@ public class Controller implements Initializable {
         }
     }
 
-    public void startLike(ActionEvent event) {
+    public void startLike() {
         if (checkAll()) {
             new Thread(() -> new Engine(loginField.getText(),
                     passwordField.getText(),
@@ -72,10 +72,12 @@ public class Controller implements Initializable {
         }
     }
 
-    public void startMessage(ActionEvent event) {
+    public void startMessage() {
         if (checkLoginPswAndMessage()) {
             new Thread(() -> new Engine(loginField.getText(),
-                    passwordField.getText(), userMessage.getText())).start();
+                    passwordField.getText(),
+                    userMessage.getText(),
+                    Integer.parseInt(messageCount.getText()))).start();
         } else {
             guiLOG.appendText("Неверные данные для входа!\r\n");
         }
@@ -86,7 +88,6 @@ public class Controller implements Initializable {
     }
 
     public void info(ActionEvent event) {
-
     }
 
     public void save(ActionEvent event) {
@@ -106,6 +107,7 @@ public class Controller implements Initializable {
         prop.setProperty("login", "");
         prop.setProperty("password", "");
         prop.setProperty("mainSearchWord", "");
+        prop.setProperty("message", "");
 
         storeProp();
     }
@@ -113,7 +115,8 @@ public class Controller implements Initializable {
     private boolean checkLoginPswAndMessage() {
         return !passwordField.getText().equals("")
                 && !loginField.getText().equals("")
-                && !userMessage.getText().equals("");
+                && !userMessage.getText().equals("")
+                && !messageCount.getText().equals("");
     }
 
     private boolean checkAll() {

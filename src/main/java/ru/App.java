@@ -1,6 +1,7 @@
 package ru;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -16,6 +17,7 @@ public class App extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("prop.fxml"));
         Parent parent = loader.load();
         controller = loader.getController();
+        primaryStage.setOnCloseRequest(e -> Platform.exit());
         primaryStage.setScene(new Scene(parent));
         primaryStage.show();
     }

@@ -30,6 +30,7 @@ public class Engine {
 
     public Engine(String login, String pswrd, String searchWord, long likeCount) {
         LOG.trace("Start liking");
+        sendLogMsg("Start liking");
         random = new Random();
         ps = new PrimarySettings(login, pswrd, searchWord, likeCount);
         browserSetUp();
@@ -39,15 +40,17 @@ public class Engine {
         new Like(this, chrome);
     }
 
-    public Engine(String login, String pswrd, String message) {
+    //TODO same constructors
+    public Engine(String login, String pswrd, String message, int messageCount) {
         LOG.trace("Start messaging");
+        sendLogMsg("Start messaging");
         random = new Random();
         ps = new PrimarySettings(login, pswrd, message);
         browserSetUp();
         urlInit();
         xpathsInit();
         login();
-        new Message(this, chrome);
+        new Message(this, chrome, messageCount);
     }
 
 
@@ -160,6 +163,7 @@ public class Engine {
         url.put("login", "https://www.instagram.com/accounts/login/");
         url.put("instagram", "https://www.instagram.com/");
         url.put("blank", "window.open('about:blank','_blank');");
+        url.put("moscow", "https://www.instagram.com/explore/locations/108889350634961/moscow/");
     }
 
     /**
