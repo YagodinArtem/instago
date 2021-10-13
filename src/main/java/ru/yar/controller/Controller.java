@@ -21,11 +21,12 @@ public class Controller implements Initializable {
     public TextField searchWordField;
     public TextField likesCount;
     public TextArea guiLOG;
+    public TextArea userMessage;
+    public TextField messageCount;
     private Properties prop;
     private File file;
     public File dir;
     private String filePath;
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -43,23 +44,24 @@ public class Controller implements Initializable {
                 prop.put("login", "");
                 prop.put("password", "");
                 prop.put("mainSearchWord", "");
+                prop.put("message", "");
                 storeProp();
             } else {
                 prop.load(new FileInputStream(filePath));
             }
             if (!prop.getProperty("login").equals("")
-                    && !prop.getProperty("password").equals("")
-                    && !prop.getProperty("mainSearchWord").equals("")) {
+                    && !prop.getProperty("password").equals("")) {
                 loginField.setText(prop.getProperty("login"));
                 passwordField.setText(prop.getProperty("password"));
                 searchWordField.setText(prop.getProperty("mainSearchWord"));
+                userMessage.setText(prop.getProperty("message"));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void start(ActionEvent event) {
+    public void startLike() {
         if (checkAll()) {
             new Thread(() -> new Engine(loginField.getText(),
                     passwordField.getText(),
@@ -70,11 +72,51 @@ public class Controller implements Initializable {
         }
     }
 
+    public void startMessage() {
+        if (checkLoginPswAndMessage()) {
+            new Thread(() -> new Engine(loginField.getText(),
+                    passwordField.getText(),
+                    userMessage.getText(),
+                    Integer.parseInt(messageCount.getText()))).start();
+        } else {
+            guiLOG.appendText("Неверные данные для входа!\r\n");
+        }
+    }
+
     public void stop(ActionEvent event) {
+        System.exit(0);
     }
 
     public void info(ActionEvent event) {
+    }
 
+    public void save(ActionEvent event) {
+        if (!passwordField.getText().equals("")
+                && !loginField.getText().equals("")) {
+
+            prop.setProperty("login", loginField.getText());
+            prop.setProperty("password", passwordField.getText());
+            prop.setProperty("mainSearchWord", searchWordField.getText());
+            prop.setProperty("message", userMessage.getText());
+
+            storeProp();
+        }
+    }
+
+    public void delete(ActionEvent event) {
+        prop.setProperty("login", "");
+        prop.setProperty("password", "");
+        prop.setProperty("mainSearchWord", "");
+        prop.setProperty("message", "");
+
+        storeProp();
+    }
+
+    private boolean checkLoginPswAndMessage() {
+        return !passwordField.getText().equals("")
+                && !loginField.getText().equals("")
+                && !userMessage.getText().equals("")
+                && !messageCount.getText().equals("");
     }
 
     private boolean checkAll() {
@@ -84,14 +126,6 @@ public class Controller implements Initializable {
                 && !likesCount.getText().equals("");
     }
 
-    public void delete(ActionEvent event) {
-        prop.setProperty("login", "");
-        prop.setProperty("password", "");
-        prop.setProperty("mainSearchWord", "");
-
-        storeProp();
-    }
-
     private void storeProp() {
         try {
             FileOutputStream fos = new FileOutputStream(file);
@@ -99,19 +133,6 @@ public class Controller implements Initializable {
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    public void save(ActionEvent event) {
-        if (!passwordField.getText().equals("")
-                && !loginField.getText().equals("")
-                && !searchWordField.getText().equals("")) {
-
-            prop.setProperty("login", loginField.getText());
-            prop.setProperty("password", passwordField.getText());
-            prop.setProperty("mainSearchWord", searchWordField.getText());
-
-            storeProp();
         }
     }
 }
