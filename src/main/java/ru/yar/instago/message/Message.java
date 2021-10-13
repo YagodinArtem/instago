@@ -1,10 +1,10 @@
 package ru.yar.instago.message;
 
+import ru.yar.instago.Engine;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-import ru.yar.instago.Engine;
 
 import java.util.ArrayList;
 import java.util.HashSet;

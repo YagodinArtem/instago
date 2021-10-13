@@ -25,7 +25,7 @@ public class Controller implements Initializable {
     public TextField messageCount;
     private Properties prop;
     private File file;
-    public File dir;
+    public static File dir;
     private String filePath;
 
     @Override

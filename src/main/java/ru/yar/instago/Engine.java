@@ -1,15 +1,17 @@
 package ru.yar.instago;
 
 import javafx.application.Platform;
+import org.openqa.selenium.WebDriver;
+import ru.App;
+import ru.yar.controller.Controller;
+import ru.yar.instago.like.Like;
+import ru.yar.instago.message.Message;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
-import ru.App;
-import ru.yar.instago.like.Like;
-import ru.yar.instago.message.Message;
 
 import java.io.*;
 import java.util.*;
@@ -74,7 +76,7 @@ public class Engine {
      * Setups for browser (chrome)
      */
     private void browserSetUp() {
-        String path = App.controller.dir.getPath() + "/chromedriver.exe";
+        String path = Controller.dir.getPath() + "/chromedriver.exe";
         InputStream is;
         BufferedInputStream bis;
         BufferedOutputStream bos;
@@ -114,6 +116,7 @@ public class Engine {
         chrome.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
 
+
     /**
      * Login to instagram
      */
@@ -121,11 +124,11 @@ public class Engine {
         try {
             chrome.get(url.get("login"));
             waitExactly(3);
-            chrome.findElementByName("username").sendKeys(ps.getLogin());
+            chrome.findElement(By.name("username")).sendKeys(ps.getLogin());
             waitExactly(3);
-            chrome.findElementByName("password").sendKeys(ps.getPassword());
+            chrome.findElement(By.name("password")).sendKeys(ps.getPassword());
             waitExactly(3);
-            chrome.findElementByXPath(xpaths.get("login_button")).click();
+            chrome.findElement(By.name(xpaths.get("login_button"))).click();
             waitExactly(5);
 
             chrome.findElement(By.id("slfErrorAlert"));
@@ -148,7 +151,7 @@ public class Engine {
      */
     private void firstPopupDisable() {
         try {
-            chrome.findElementByXPath(xpaths.get("not_now_button")).click();
+            chrome.findElement(By.xpath(xpaths.get("not_now_button"))).click();
             LOG.trace("Popup window closed");
         } catch (NoSuchElementException e) {
             LOG.trace("Popup window after login does not appear");

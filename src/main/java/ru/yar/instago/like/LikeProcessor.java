@@ -1,10 +1,10 @@
 package ru.yar.instago.like;
 
+import ru.yar.instago.Engine;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-import ru.yar.instago.Engine;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -172,7 +172,7 @@ public class LikeProcessor {
     private void likeCurrent() {
         try {
             engine.humanImitation();
-            WebElement likeButton = chrome.findElementByClassName("fr66n"); //span
+            WebElement likeButton = chrome.findElement(By.className("fr66n")); //span
             if (!likeButton
                     .findElement(By.tagName("button")) //button in span
                     .findElement(By.tagName("svg"))
