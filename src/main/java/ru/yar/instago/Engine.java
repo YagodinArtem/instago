@@ -128,10 +128,11 @@ public class Engine {
             waitExactly(3);
             chrome.findElement(By.name("password")).sendKeys(ps.getPassword());
             waitExactly(3);
-            chrome.findElement(By.name(xpaths.get("login_button"))).click();
-            waitExactly(5);
+            chrome.findElement(By.xpath((xpaths.get("login_button")))).click();
+            waitExactly(7);
 
             chrome.findElement(By.id("slfErrorAlert"));
+            waitExactly(3);
             sendLogMsg("Login - failed.");
             chrome.close();
             Thread.currentThread().stop();
@@ -174,7 +175,7 @@ public class Engine {
      */
     private void xpathsInit() {
         xpaths = new HashMap<>();
-        xpaths.put("login_button", "//*[@id=\"loginForm\"]/div/div[3]/button/div");
+        xpaths.put("login_button", "//*[@id=\"loginForm\"]/div/div[3]/button");
         xpaths.put("not_now_button", "/html/body/div[4]/div/div/div/div[3]/button[2]");
     }
 
