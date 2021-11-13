@@ -84,6 +84,18 @@ public class Controller implements Initializable {
     }
 
     public void stop(ActionEvent event) {
+        try {
+            Engine.chrome.close();
+            Engine.chrome.quit();
+        } catch (NullPointerException e) {
+            e.getCause();
+        } finally {
+            try {
+                Engine.killChromedriverExeService();
+            } catch (IOException e) {
+                e.getCause();
+            }
+        }
         System.exit(0);
     }
 

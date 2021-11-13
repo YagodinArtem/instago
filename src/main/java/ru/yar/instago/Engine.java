@@ -1,26 +1,34 @@
 package ru.yar.instago;
 
 import javafx.application.Platform;
-import org.openqa.selenium.WebDriver;
+import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.chrome.ChromeDriver;
 import ru.App;
 import ru.yar.controller.Controller;
 import ru.yar.instago.like.Like;
 import ru.yar.instago.message.Message;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.By;
-import org.openqa.selenium.ElementClickInterceptedException;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.io.*;
+import java.net.URL;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import static ru.yar.controller.Controller.dir;
 
 public class Engine {
 
+    private static final String CHROMEDRIVER = "/chromedriver.exe";
+
     private PrimarySettings ps;
-    private ChromeDriver chrome;
+    public static ChromeDriver chrome;
     private Map<String, String> xpaths;
     private Map<String, String> url;
 
@@ -31,7 +39,6 @@ public class Engine {
     private static final Logger LOG = LogManager.getLogger(Engine.class.getName());
 
     public Engine(String login, String pswrd, String searchWord, long likeCount) {
-        LOG.trace("Start liking");
         sendLogMsg("Start liking");
         random = new Random();
         ps = new PrimarySettings(login, pswrd, searchWord, likeCount);
@@ -44,7 +51,6 @@ public class Engine {
 
     //TODO same constructors
     public Engine(String login, String pswrd, String message, int messageCount) {
-        LOG.trace("Start messaging");
         sendLogMsg("Start messaging");
         random = new Random();
         ps = new PrimarySettings(login, pswrd, message);
@@ -60,7 +66,6 @@ public class Engine {
      * Не используется в gui версии приложения.
      */
     public Engine() {
-        LOG.trace("Start the program");
         random = new Random();
         ps = new PrimarySettings();
         browserSetUp();
@@ -76,7 +81,93 @@ public class Engine {
      * Setups for browser (chrome)
      */
     private void browserSetUp() {
-        String path = Controller.dir.getPath() + "/chromedriver.exe";
+        String path = dir.getPath() + CHROMEDRIVER;
+
+        System.out.println(path);
+        installChromeDriver(path);
+
+        System.setProperty("webdriver.chrome.driver", path);
+        chrome = new ChromeDriver();
+        Capabilities all = chrome.getCapabilities();
+
+        String currentDriverVersion = getCurrentDriverVersion(all);
+        String currentBrowserVersion = all.getCapability("browserVersion").toString();
+
+        sendLogMsg("Current browser version: " + currentBrowserVersion);
+        sendLogMsg("Current driver version: " + currentDriverVersion);
+
+        if (!currentBrowserVersion.equals(currentDriverVersion)) {
+            chrome.close();
+            chrome.quit();
+            downloadAndInstallNewDriverVersion(path, currentBrowserVersion);
+        }
+
+        chrome.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+    }
+
+    private void downloadAndInstallNewDriverVersion(String path, String currentBrowserVersion) {
+        try {
+            if (new File(path).delete()) {
+                sendLogMsg("Old driver deleted");
+            }
+            killChromedriverExeService();
+
+            sendLogMsg("Start downloading new chromedriver.exe");
+            URL driverDownloadUrl =
+                    new URL(String.format("https://chromedriver.storage.googleapis.com/%s/chromedriver_win32.zip",
+                            currentBrowserVersion));
+            sendLogMsg(String.format("https://chromedriver.storage.googleapis.com/%s/chromedriver_win32.zip",
+                    currentBrowserVersion));
+
+            File downloadedDriverInZip = new File(Controller.dir.getPath() + "/chromedriver_win32");
+            FileUtils.copyURLToFile(driverDownloadUrl, downloadedDriverInZip);
+
+            unzipDriver(downloadedDriverInZip);
+
+            System.setProperty("webdriver.chrome.driver", path);
+            chrome = new ChromeDriver();
+            sendLogMsg("Restart the application");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            sendLogMsg("New chromedriver.exe was successfully installed in: " + path);
+            sendLogMsg(getCurrentDriverVersion(chrome.getCapabilities()));
+        }
+    }
+
+    public static void killChromedriverExeService() throws IOException {
+        Runtime.getRuntime().exec(String.format("taskkill /F /IM %s", "chromedriver.exe"));
+    }
+
+    private void unzipDriver(File downloadedDriverInZip) {
+        byte[] buffer = new byte[1024];
+        ZipEntry zipEntry;
+        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(downloadedDriverInZip));){
+            zipEntry = zis.getNextEntry();
+            while (zipEntry != null) {
+                File newFile = new File(Controller.dir.getPath() + CHROMEDRIVER);
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+                fos.close();
+                zipEntry = zis.getNextEntry();
+            }
+            zis.closeEntry();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getCurrentDriverVersion(Capabilities all) {
+        String chromeCapabilities = all.getCapability("chrome").toString().split(" ")[0];
+        chromeCapabilities = chromeCapabilities.replaceFirst("[{]", "");
+        return chromeCapabilities.split("=")[1];
+    }
+
+    private void installChromeDriver(String path) {
         InputStream is;
         BufferedInputStream bis;
         BufferedOutputStream bos;
@@ -110,10 +201,6 @@ public class Engine {
             e.printStackTrace();
             LOG.error("Unable to install chromedriver");
         }
-
-        System.setProperty("webdriver.chrome.driver", path);
-        chrome = new ChromeDriver();
-        chrome.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
 
 
@@ -214,6 +301,7 @@ public class Engine {
     }
 
     public void sendLogMsg(String msg) {
+        LOG.info(msg);
         Platform.runLater(() -> App.controller.guiLOG.appendText(new Date() + ": " + msg + "\r\n"));
     }
 }
