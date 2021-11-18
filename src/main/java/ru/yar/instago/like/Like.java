@@ -12,6 +12,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 
 import java.io.*;
+import java.lang.reflect.GenericDeclaration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -83,12 +84,13 @@ public class Like {
 
         } catch (IOException e) {
             LOG.error("Unable to read count from save.txt");
+            engine.sendLogMsg(e.getMessage());
         }
     }
 
     /**
      * Start searching by input the search word (prop.properties var mainSearchWord).
-     *
+     * <p>
      * Начинает первичный поиск главных аккаунтов.
      */
     private void startSearching() {
@@ -98,28 +100,37 @@ public class Like {
                             .getPs()
                             .getMainSearchWord());
         } catch (NoSuchElementException e) {
-           LOG.error("NoSuch " + e);
+            LOG.error("NoSuch " + e);
+            engine.sendLogMsg(e.getMessage());
         }
     }
 
     /**
      * Find and add all WebElements by xpath (major accounts) to the result List<WebElement>.
-     *
+     * <p>
      * Добавляет все найденные по ключевому слову главные аккаунты в список searchResult;
      */
     private void addAll() {
-        engine.waitExactly(2);
-        searchResult = chrome.findElements(By.tagName("a"));
-        engine.sendLogMsg("Main page founded: " + searchResult.size());
+        try {
+            engine.waitExactly(2);
+            searchResult = chrome.findElements(By.tagName("a"));
+            engine.sendLogMsg("Main page founded: " + searchResult.size());
+        } catch (Exception e) {
+            engine.sendLogMsg(e.getMessage());
+        }
     }
 
     /**
      * Adds all links from major accounts to List<String> links.
-     *
+     * <p>
      * Добавляет все прямые ссылки на главные аккаунты из списка searchResult в список links;
      */
     private void addLinks() {
-        for (WebElement webElement : searchResult) links.add(webElement.getAttribute("href"));
+        try {
+            for (WebElement webElement : searchResult) links.add(webElement.getAttribute("href"));
+        } catch (Exception e) {
+            engine.sendLogMsg(e.getMessage());
+        }
     }
 
 
@@ -144,6 +155,7 @@ public class Like {
                     writer.flush();
                 } catch (IOException e) {
                     LOG.error("Unable to write save.txt");
+                    engine.sendLogMsg(e.getMessage());
                 }
             }
             count++;
@@ -152,7 +164,7 @@ public class Like {
 
     /**
      * Close streams and browser driver.
-     *
+     * <p>
      * Закрывает потоки ввода вывода и драйвер браузера.
      */
     public void closeAll() {
@@ -163,6 +175,7 @@ public class Like {
             chrome.close();
         } catch (IOException e) {
             LOG.error("Unable to close streams");
+            engine.sendLogMsg(e.getMessage());
         }
     }
 }

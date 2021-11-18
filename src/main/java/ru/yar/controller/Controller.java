@@ -2,6 +2,7 @@ package ru.yar.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import ru.yar.instago.Engine;
@@ -23,6 +24,7 @@ public class Controller implements Initializable {
     public TextArea guiLOG;
     public TextArea userMessage;
     public TextField messageCount;
+    public CheckBox shadowMode;
     private Properties prop;
     private File file;
     public static File dir;
@@ -66,7 +68,7 @@ public class Controller implements Initializable {
             new Thread(() -> new Engine(loginField.getText(),
                     passwordField.getText(),
                     searchWordField.getText(),
-                    Long.parseLong(likesCount.getText()))).start();
+                    Long.parseLong(likesCount.getText()), shadowMode.isSelected())).start();
         } else {
             guiLOG.appendText("Неверные данные для входа!\r\n");
         }
@@ -77,7 +79,7 @@ public class Controller implements Initializable {
             new Thread(() -> new Engine(loginField.getText(),
                     passwordField.getText(),
                     userMessage.getText(),
-                    Integer.parseInt(messageCount.getText()))).start();
+                    Integer.parseInt(messageCount.getText()), shadowMode.isSelected())).start();
         } else {
             guiLOG.appendText("Неверные данные для входа!\r\n");
         }

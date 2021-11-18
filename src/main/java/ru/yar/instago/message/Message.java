@@ -17,7 +17,7 @@ public class Message {
     private Set<String> links;
     private ArrayList<String> tabs;
 
-    private static final Logger LOG = LogManager.getLogger(Engine.class.getName());
+    private static final Logger LOG = LogManager.getLogger(Message.class.getName());
 
     /**
      * Количество сообщение к отправке

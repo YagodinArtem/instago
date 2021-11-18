@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.paint.*;
 import javafx.stage.Stage;
 import ru.yar.controller.Controller;
 
@@ -18,7 +19,9 @@ public class App extends Application {
         Parent parent = loader.load();
         controller = loader.getController();
         primaryStage.setOnCloseRequest(e -> Platform.exit());
-        primaryStage.setScene(new Scene(parent));
+        Scene main = new Scene(parent);
+        primaryStage.setScene(main);
+        primaryStage.setTitle("INSTAGO");
         primaryStage.show();
     }
 

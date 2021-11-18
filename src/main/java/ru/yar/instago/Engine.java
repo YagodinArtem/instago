@@ -9,6 +9,7 @@ import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import ru.App;
 import ru.yar.controller.Controller;
 import ru.yar.instago.like.Like;
@@ -38,11 +39,11 @@ public class Engine {
 
     private static final Logger LOG = LogManager.getLogger(Engine.class.getName());
 
-    public Engine(String login, String pswrd, String searchWord, long likeCount) {
+    public Engine(String login, String pswrd, String searchWord, long likeCount, boolean shadowMode) {
         sendLogMsg("Start liking");
         random = new Random();
         ps = new PrimarySettings(login, pswrd, searchWord, likeCount);
-        browserSetUp();
+        browserSetUp(shadowMode);
         urlInit();
         xpathsInit();
         login();
@@ -50,11 +51,11 @@ public class Engine {
     }
 
     //TODO same constructors
-    public Engine(String login, String pswrd, String message, int messageCount) {
+    public Engine(String login, String pswrd, String message, int messageCount, boolean shadowMode) {
         sendLogMsg("Start messaging");
         random = new Random();
         ps = new PrimarySettings(login, pswrd, message);
-        browserSetUp();
+        browserSetUp(shadowMode);
         urlInit();
         xpathsInit();
         login();
@@ -68,7 +69,7 @@ public class Engine {
     public Engine() {
         random = new Random();
         ps = new PrimarySettings();
-        browserSetUp();
+        browserSetUp(false);
         urlInit();
         xpathsInit();
         login();
@@ -80,14 +81,22 @@ public class Engine {
     /**
      * Setups for browser (chrome)
      */
-    private void browserSetUp() {
+    private void browserSetUp(boolean shadowMode) {
+        if (shadowMode) {
+            sendLogMsg("""
+                    Don`t worry! You chose work in shadow mode,\s
+                    and you will not see browser, but it works, watch the log window :D\s
+                    next time if you want to see browser at work, just don`t pass the check box""");
+        }
         String path = dir.getPath() + CHROMEDRIVER;
 
         System.out.println(path);
         installChromeDriver(path);
 
         System.setProperty("webdriver.chrome.driver", path);
-        chrome = new ChromeDriver();
+
+        chrome = getChromeWithOptions(shadowMode);
+
         Capabilities all = chrome.getCapabilities();
 
         String currentDriverVersion = getCurrentDriverVersion(all);
@@ -99,13 +108,13 @@ public class Engine {
         if (!currentBrowserVersion.equals(currentDriverVersion)) {
             chrome.close();
             chrome.quit();
-            downloadAndInstallNewDriverVersion(path, currentBrowserVersion);
+            downloadAndInstallNewDriverVersion(path, currentBrowserVersion, shadowMode);
         }
 
         chrome.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
 
-    private void downloadAndInstallNewDriverVersion(String path, String currentBrowserVersion) {
+    private void downloadAndInstallNewDriverVersion(String path, String currentBrowserVersion, boolean shadowMode) {
         try {
             if (new File(path).delete()) {
                 sendLogMsg("Old driver deleted");
@@ -125,7 +134,7 @@ public class Engine {
             unzipDriver(downloadedDriverInZip);
 
             System.setProperty("webdriver.chrome.driver", path);
-            chrome = new ChromeDriver();
+            chrome = getChromeWithOptions(shadowMode);
             sendLogMsg("Restart the application");
 
         } catch (IOException e) {
@@ -133,6 +142,16 @@ public class Engine {
         } finally {
             sendLogMsg("New chromedriver.exe was successfully installed in: " + path);
             sendLogMsg(getCurrentDriverVersion(chrome.getCapabilities()));
+        }
+    }
+
+    private ChromeDriver getChromeWithOptions(boolean shadowMode) {
+        if (shadowMode) {
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("headless");
+            return new ChromeDriver(options);
+        } else {
+            return new ChromeDriver();
         }
     }
 

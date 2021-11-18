@@ -156,12 +156,15 @@ public class LikeProcessor {
             return true;
         } catch (NoSuchElementException e) {
             LOG.trace("Classname не найден - " + cName);
+            engine.sendLogMsg(e.getMessage());
             return false;
         } catch (ElementNotInteractableException e) {
             LOG.trace("Элемент не интерактивен - " + cName);
+            engine.sendLogMsg(e.getMessage());
             return false;
         } catch (StaleElementReferenceException e) {
             LOG.trace("Элемент не прикреплен к странице");
+            engine.sendLogMsg(e.getMessage());
             return false;
         }
     }
@@ -188,6 +191,7 @@ public class LikeProcessor {
             }
         } catch (NoSuchElementException e) {
             e.printStackTrace();
+            engine.sendLogMsg(e.getMessage());
             LOG.error("Не могу найти кнопку лайк! Возможно не загрузилась страница");
         }
     }
@@ -213,6 +217,7 @@ public class LikeProcessor {
             chrome.switchTo().window(tabs.get(0));
         } catch (NoSuchWindowException e) {
             LOG.error("tabs.get(0) error");
+            engine.sendLogMsg(e.getMessage());
         }
         while (((JavascriptExecutor) chrome).executeScript("return document.readyState").equals("complete")) {
             scrollDownOnce();
