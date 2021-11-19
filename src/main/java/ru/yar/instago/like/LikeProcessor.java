@@ -21,6 +21,8 @@ public class LikeProcessor {
     private Set<String> handledLinks;
     private Like like;
 
+    private static final String LIKE_BUTTON_CLASS_NAME = "_9AhH0";
+
     /** dayPermission
      * вероятное допустимое количество лайков в день
      */
@@ -150,21 +152,17 @@ public class LikeProcessor {
      * @return true if founded
      */
     private boolean findFirst() {
-        String cName = "_9AhH0";
         try {
-            chrome.findElement(By.className(cName)).click();
+            chrome.findElement(By.className(LIKE_BUTTON_CLASS_NAME)).click();
             return true;
         } catch (NoSuchElementException e) {
-            LOG.trace("Classname не найден - " + cName);
-            engine.sendLogMsg(e.getMessage());
+            LOG.trace("Classname не найден - " + LIKE_BUTTON_CLASS_NAME);
             return false;
         } catch (ElementNotInteractableException e) {
-            LOG.trace("Элемент не интерактивен - " + cName);
-            engine.sendLogMsg(e.getMessage());
+            LOG.trace("Элемент не интерактивен - " + LIKE_BUTTON_CLASS_NAME);
             return false;
         } catch (StaleElementReferenceException e) {
             LOG.trace("Элемент не прикреплен к странице");
-            engine.sendLogMsg(e.getMessage());
             return false;
         }
     }
