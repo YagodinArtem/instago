@@ -27,6 +27,7 @@ import static ru.yar.controller.Controller.dir;
 public class Engine {
 
     private static final String CHROMEDRIVER = "/chromedriver.exe";
+    public static final String WEBDRIVER_CHROME_DRIVER = "webdriver.chrome.driver";
 
     private PrimarySettings ps;
     public static ChromeDriver chrome;
@@ -90,25 +91,37 @@ public class Engine {
         }
         String path = dir.getPath() + CHROMEDRIVER;
 
-        System.out.println(path);
         installChromeDriver(path);
 
-        System.setProperty("webdriver.chrome.driver", path);
+        System.setProperty(WEBDRIVER_CHROME_DRIVER, path);
+        Capabilities capabilities;
+        ChromeDriver testDriver = null;
+        String currentDriverVersion;
+        String currentBrowserVersion;
+        try {
+            testDriver = getChromeWithOptions(shadowMode);
+            capabilities = testDriver.getCapabilities();
+            LOG.info(capabilities.getVersion() + "RAW 102");
 
-        chrome = getChromeWithOptions(shadowMode);
+            currentDriverVersion = capabilities.getVersion(); //get current driver version
+            currentBrowserVersion = chromeVersion(); //get current browser version
 
-        Capabilities all = chrome.getCapabilities();
+            sendLogMsg("Current browser version: " + currentBrowserVersion);
+            sendLogMsg("Current driver version: " + currentDriverVersion);
 
-        String currentDriverVersion = getCurrentDriverVersion(all);
-        String currentBrowserVersion = all.getCapability("browserVersion").toString();
+            if (!currentBrowserVersion.equals(currentDriverVersion)) {
+                downloadAndInstallNewDriverVersion(path, currentBrowserVersion, shadowMode);
+            } else {
+                chrome = getChromeWithOptions(shadowMode);
+            }
 
-        sendLogMsg("Current browser version: " + currentBrowserVersion);
-        sendLogMsg("Current driver version: " + currentDriverVersion);
-
-        if (!currentBrowserVersion.equals(currentDriverVersion)) {
-            chrome.close();
-            chrome.quit();
-            downloadAndInstallNewDriverVersion(path, currentBrowserVersion, shadowMode);
+        } catch (Exception e) {
+            LOG.info("Версии разные");
+            downloadAndInstallNewDriverVersion(path, chromeVersion(), shadowMode);
+        } finally {
+            if (testDriver != null) {
+                testDriver.quit();
+            }
         }
 
         chrome.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
@@ -141,7 +154,6 @@ public class Engine {
             e.printStackTrace();
         } finally {
             sendLogMsg("New chromedriver.exe was successfully installed in: " + path);
-            sendLogMsg(getCurrentDriverVersion(chrome.getCapabilities()));
         }
     }
 
@@ -155,6 +167,46 @@ public class Engine {
         }
     }
 
+    private String chromeVersion() {
+
+        try {
+            Runtime rt = Runtime.getRuntime();
+            Process proc = rt.exec("reg query " + "HKEY_CURRENT_USER\\Software\\Google\\Chrome\\BLBeacon " + "/v version");
+            BufferedReader stdInput = new BufferedReader(new
+                    InputStreamReader(proc.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new
+                    InputStreamReader(proc.getErrorStream()));
+
+            // Read the output from the command
+            System.out.println("Here is the standard output of the command:\n");
+            String s = null;
+            while ((s = stdInput.readLine()) != null) {
+                if (s.contains("version") || s.contains("REG_SZ")) {
+
+                    StringBuilder sb = new StringBuilder();
+                    for (Character c : s.toCharArray()) {
+                        if (Character.isDigit(c) || c == '.') {
+                            sb.append(c);
+                        }
+                    }
+
+                    if (sb.toString().length() > 0) {
+                        return sb.toString();
+                    }
+                }
+            }
+            System.out.println("Here is the standard error of the command (if any):\n");
+            while ((s = stdError.readLine()) != null) {
+                LOG.error(s);
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+        sendLogMsg("Chrome driver version not founded =(");
+        return "";
+    }
+
     public static void killChromedriverExeService() throws IOException {
         Runtime.getRuntime().exec(String.format("taskkill /F /IM %s", "chromedriver.exe"));
     }
@@ -162,7 +214,7 @@ public class Engine {
     private void unzipDriver(File downloadedDriverInZip) {
         byte[] buffer = new byte[1024];
         ZipEntry zipEntry;
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(downloadedDriverInZip));){
+        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(downloadedDriverInZip));) {
             zipEntry = zis.getNextEntry();
             while (zipEntry != null) {
                 File newFile = new File(Controller.dir.getPath() + CHROMEDRIVER);
