@@ -1,86 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.effect.Glow?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.paint.LinearGradient?>
-<?import javafx.scene.paint.Stop?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="468.0" prefWidth="647.0" style="-fx-background-color: linear-gradient(to right, black, blue);" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.yar.controller.Controller">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="468.0" prefWidth="647.0" style="-fx-background-color: linear-gradient(to right, black, blue);" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.yar.controller.Controller">
     <children>
-        <GridPane style="-fx-background-color: linear-gradient(to right, black, blue);">
+        <GridPane prefHeight="266.0" prefWidth="659.0" style="-fx-background-color: linear-gradient(to right, black, blue);">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="295.0" minWidth="10.0" prefWidth="204.0" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="396.0" minWidth="10.0" prefWidth="396.0" />
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="27.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="27.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="27.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="27.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="27.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="27.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="27.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="27.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="27.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="27.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
                 <Label alignment="CENTER_RIGHT" prefHeight="56.0" prefWidth="277.0" text="Login:" textFill="#b73ec9" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
-                    <font>
-                        <Font name="Bodoni MT" size="18.0" />
-                    </font>
                     <effect>
                         <Glow level="0.7" />
                     </effect>
+               <font>
+                  <Font size="14.0" />
+               </font>
                 </Label>
                 <Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="10.0" prefHeight="56.0" prefWidth="277.0" text="Password:" textFill="#b73ec9" GridPane.rowIndex="1">
-                    <font>
-                        <Font name="Bodoni MT" size="18.0" />
-                    </font>
                     <effect>
                         <Glow level="0.7" />
                     </effect>
+               <font>
+                  <Font size="14.0" />
+               </font>
                 </Label>
                 <Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="40.0" prefHeight="56.0" prefWidth="277.0" text="Search word:" textFill="#b73ec9" GridPane.rowIndex="2">
-                    <font>
-                        <Font name="Bodoni MT" size="18.0" />
-                    </font>
                     <effect>
                         <Glow level="0.7" />
                     </effect>
+               <font>
+                  <Font size="14.0" />
+               </font>
                 </Label>
                 <TextField fx:id="loginField" prefHeight="25.0" prefWidth="365.0" GridPane.columnIndex="1">
                     <GridPane.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                     </GridPane.margin>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
                 </TextField>
                 <TextField fx:id="searchWordField" layoutX="214.0" layoutY="43.0" prefHeight="25.0" prefWidth="365.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                     <GridPane.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                     </GridPane.margin>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
                 </TextField>
                 <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="1">
                     <GridPane.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                     </GridPane.margin>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
                 </PasswordField>
-                <Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="69.0" prefHeight="27.0" prefWidth="250.0" text="Controls:" textFill="#b73ec9" GridPane.rowIndex="5">
-                    <font>
-                        <Font name="Bodoni MT" size="18.0" />
-                    </font>
+                <Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="69.0" prefHeight="27.0" prefWidth="250.0" text="Controls:" textFill="#b73ec9" GridPane.rowIndex="9">
                     <effect>
                         <Glow level="0.7" />
                     </effect>
+               <font>
+                  <Font size="14.0" />
+               </font>
                 </Label>
-                <GridPane alignment="CENTER" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5">
+                <GridPane alignment="CENTER" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="9">
                     <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="116.0" minWidth="10.0" prefWidth="116.0" />
@@ -93,120 +96,187 @@
                     </rowConstraints>
                     <children>
                         <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#startLike" style="-fx-background-color: linear-gradient(to right, red, pink);" text="StartLiking" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                     <GridPane.margin>
-                        <Insets left="20.0" />
-                     </GridPane.margin>
-                     <textFill>
-                        <LinearGradient endY="1.0">
-                           <stops>
-                              <Stop color="BLACK" />
-                              <Stop color="BLACK" offset="0.5134099616858238" />
-                              <Stop color="#f81212" offset="1.0" />
-                           </stops>
-                        </LinearGradient>
-                     </textFill></Button>
+                            <GridPane.margin>
+                                <Insets left="20.0" />
+                            </GridPane.margin>
+                            <textFill>
+                                <LinearGradient endY="1.0">
+                                    <stops>
+                                        <Stop color="BLACK" />
+                                        <Stop color="BLACK" offset="0.5134099616858238" />
+                                        <Stop color="#f81212" offset="1.0" />
+                                    </stops>
+                                </LinearGradient>
+                            </textFill>
+                        </Button>
                         <Button alignment="CENTER" contentDisplay="CENTER" layoutX="50.0" layoutY="13.0" mnemonicParsing="false" onAction="#stop" style="-fx-background-color: linear-gradient(to right, red, pink);" text="Stop" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                     <textFill>
-                        <LinearGradient endY="1.0">
-                           <stops>
-                              <Stop color="BLACK" />
-                              <Stop color="BLACK" offset="0.5134099616858238" />
-                              <Stop color="#f81212" offset="1.0" />
-                           </stops>
-                        </LinearGradient>
-                     </textFill></Button>
+                            <textFill>
+                                <LinearGradient endY="1.0">
+                                    <stops>
+                                        <Stop color="BLACK" />
+                                        <Stop color="BLACK" offset="0.5134099616858238" />
+                                        <Stop color="#f81212" offset="1.0" />
+                                    </stops>
+                                </LinearGradient>
+                            </textFill>
+                        </Button>
                         <Button alignment="CENTER" contentDisplay="CENTER" layoutX="182.0" layoutY="13.0" mnemonicParsing="false" onAction="#startMessage" prefHeight="25.0" prefWidth="105.0" style="-fx-background-color: linear-gradient(to right, red, pink);" text="StartMessaging" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                     <textFill>
-                        <LinearGradient endY="1.0">
-                           <stops>
-                              <Stop color="BLACK" />
-                              <Stop color="BLACK" offset="0.5134099616858238" />
-                              <Stop color="#f81212" offset="1.0" />
-                           </stops>
-                        </LinearGradient>
-                     </textFill></Button>
+                            <textFill>
+                                <LinearGradient endY="1.0">
+                                    <stops>
+                                        <Stop color="BLACK" />
+                                        <Stop color="BLACK" offset="0.5134099616858238" />
+                                        <Stop color="#f81212" offset="1.0" />
+                                    </stops>
+                                </LinearGradient>
+                            </textFill>
+                        </Button>
                         <Button alignment="CENTER" contentDisplay="CENTER" layoutX="189.0" layoutY="11.0" mnemonicParsing="false" onAction="#save" style="-fx-background-color: linear-gradient(to right, red, pink);" text="Save" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                     <textFill>
-                        <LinearGradient endY="1.0">
-                           <stops>
-                              <Stop color="BLACK" />
-                              <Stop color="BLACK" offset="0.5134099616858238" />
-                              <Stop color="#f81212" offset="1.0" />
-                           </stops>
-                        </LinearGradient>
-                     </textFill></Button>
+                            <textFill>
+                                <LinearGradient endY="1.0">
+                                    <stops>
+                                        <Stop color="BLACK" />
+                                        <Stop color="BLACK" offset="0.5134099616858238" />
+                                        <Stop color="#f81212" offset="1.0" />
+                                    </stops>
+                                </LinearGradient>
+                            </textFill>
+                        </Button>
                         <Button alignment="CENTER" contentDisplay="CENTER" layoutX="268.0" layoutY="11.0" mnemonicParsing="false" onAction="#delete" style="-fx-background-color: linear-gradient(to right, red, pink);" text="Delete" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                     <textFill>
-                        <LinearGradient endY="1.0">
-                           <stops>
-                              <Stop color="BLACK" />
-                              <Stop color="BLACK" offset="0.5134099616858238" />
-                              <Stop color="#f81212" offset="1.0" />
-                           </stops>
-                        </LinearGradient>
-                     </textFill></Button>
+                            <textFill>
+                                <LinearGradient endY="1.0">
+                                    <stops>
+                                        <Stop color="BLACK" />
+                                        <Stop color="BLACK" offset="0.5134099616858238" />
+                                        <Stop color="#f81212" offset="1.0" />
+                                    </stops>
+                                </LinearGradient>
+                            </textFill>
+                        </Button>
                     </children>
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
                 </GridPane>
                 <Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="63.0" prefHeight="56.0" prefWidth="277.0" text="Likes count:" textFill="#b73ec9" GridPane.rowIndex="3">
-                    <font>
-                        <Font name="Bodoni MT" size="18.0" />
-                    </font>
                     <effect>
                         <Glow level="0.7" />
                     </effect>
+               <font>
+                  <Font size="14.0" />
+               </font>
                 </Label>
                 <TextField fx:id="likesCount" layoutX="219.0" layoutY="64.0" prefHeight="25.0" prefWidth="365.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                     <GridPane.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                     </GridPane.margin>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
                 </TextField>
                 <Label alignment="CENTER_RIGHT" prefHeight="56.0" prefWidth="277.0" text="Messages count:" textFill="#b73ec9" GridPane.rowIndex="4">
-                    <font>
-                        <Font name="Bodoni MT" size="18.0" />
-                    </font>
                     <effect>
                         <Glow level="0.7" />
                     </effect>
+               <font>
+                  <Font size="14.0" />
+               </font>
                 </Label>
                 <TextField fx:id="messageCount" prefHeight="25.0" prefWidth="365.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                     <GridPane.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                     </GridPane.margin>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
                 </TextField>
-            <Label alignment="CENTER_RIGHT" prefHeight="27.0" prefWidth="250.0" text="Work in background?" textFill="#b73ec9" GridPane.rowIndex="6">
+                <Label alignment="CENTER_RIGHT" prefHeight="27.0" prefWidth="250.0" text="Work in background?" textFill="#b73ec9" GridPane.rowIndex="6">
+                    <effect>
+                        <Glow level="0.7" />
+                    </effect>
                <font>
-                  <Font name="Bodoni MT" size="18.0" />
+                  <Font size="14.0" />
                </font>
-               <effect>
-                  <Glow level="0.7" />
-               </effect>
-            </Label>
-            <GridPane alignment="CENTER" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6">
-               <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="192.0" minWidth="10.0" prefWidth="160.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="153.0" minWidth="10.0" prefWidth="109.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="137.0" minWidth="10.0" prefWidth="116.0" />
-               </columnConstraints>
-               <rowConstraints>
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-               </rowConstraints>
-               <children>
-                  <CheckBox fx:id="shadowMode" mnemonicParsing="false" text="Shadow mode" GridPane.hgrow="ALWAYS">
-                     <GridPane.margin>
-                        <Insets left="20.0" />
-                     </GridPane.margin>
-                     <textFill>
+                </Label>
+                <GridPane alignment="CENTER" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="192.0" minWidth="10.0" prefWidth="160.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="153.0" minWidth="10.0" prefWidth="109.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="137.0" minWidth="10.0" prefWidth="116.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <CheckBox fx:id="shadowMode" mnemonicParsing="false" text="Shadow mode" GridPane.hgrow="ALWAYS">
+                            <GridPane.margin>
+                                <Insets left="20.0" />
+                            </GridPane.margin>
+                            <textFill>
+                                <LinearGradient endX="1.0" endY="1.0">
+                                    <stops>
+                                        <Stop color="#fff2f2" />
+                                        <Stop color="#ff6d6d" offset="0.5134099616858238" />
+                                        <Stop color="#f81212" offset="1.0" />
+                                    </stops>
+                                </LinearGradient>
+                            </textFill>
+                        </CheckBox>
+                    </children>
+                </GridPane>
+                <Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="172.0" prefHeight="27.0" prefWidth="250.0" text="Update chrome driver version?" textFill="#b73ec9" GridPane.rowIndex="7">
+                    <effect>
+                        <Glow level="0.7" />
+                    </effect>
+               <font>
+                  <Font size="14.0" />
+               </font>
+                </Label>
+                <CheckBox fx:id="updateDriver" mnemonicParsing="false" text="Update driver" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7">
+                    <textFill>
                         <LinearGradient endX="1.0" endY="1.0">
-                           <stops>
-                              <Stop color="#fff2f2" />
-                              <Stop color="#ff6d6d" offset="0.5134099616858238" />
-                              <Stop color="#f81212" offset="1.0" />
-                           </stops>
+                            <stops>
+                                <Stop color="#fff2f2" />
+                                <Stop color="#ff6d6d" offset="0.5134099616858238" />
+                                <Stop color="#f81212" offset="1.0" />
+                            </stops>
                         </LinearGradient>
-                     </textFill>
-                  </CheckBox>
-               </children>
-            </GridPane>
+                    </textFill>
+                    <GridPane.margin>
+                        <Insets left="20.0" />
+                    </GridPane.margin>
+                </CheckBox>
+                <Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="191.0" prefHeight="27.0" prefWidth="250.0" text="Input chrome driver version:" textFill="#b73ec9" GridPane.rowIndex="8">
+                    <effect>
+                        <Glow level="0.7" />
+                    </effect>
+               <font>
+                  <Font size="14.0" />
+               </font>
+                </Label>
+                <Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="217.0" prefHeight="27.0" prefWidth="250.0" text="Chrome driver version check:" textFill="#b73ec9" GridPane.rowIndex="5">
+                    <effect>
+                        <Glow level="0.7" />
+                    </effect>
+               <font>
+                  <Font size="14.0" />
+               </font>
+                </Label>
+                <TextField fx:id="driverVersion" layoutX="266.0" layoutY="11.0" prefHeight="25.0" prefWidth="365.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
+               <GridPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </GridPane.margin>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding></TextField>
+            <TextField editable="false" text="https://chromedriver.chromium.org/downloads" GridPane.columnIndex="1" GridPane.rowIndex="5">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+               <GridPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </GridPane.margin>
+            </TextField>
             </children>
         </GridPane>
         <TextArea fx:id="userMessage" prefHeight="59.0" prefWidth="637.0" promptText="Enter your message to send peoples" style="-fx-background-color: linear-gradient(to right, red, blue);;">
@@ -214,7 +284,7 @@
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </VBox.margin>
         </TextArea>
-        <TextArea fx:id="guiLOG" editable="false" prefHeight="218.0" prefWidth="637.0" style="-fx-border-color: linear-gradient(to right, red, blue);">
+        <TextArea fx:id="guiLOG" editable="false" prefHeight="136.0" prefWidth="629.0" style="-fx-border-color: linear-gradient(to right, red, blue);">
             <VBox.margin>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </VBox.margin>

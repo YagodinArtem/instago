@@ -8,16 +8,32 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.Proxy;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.NewSessionPayload;
 import ru.App;
 import ru.yar.controller.Controller;
 import ru.yar.instago.like.Like;
 import ru.yar.instago.message.Message;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.*;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -38,12 +54,26 @@ public class Engine {
     private final int basic = 1;
     private final Random random;
 
+    private boolean updateDriver;
+    private boolean shadowMode;
+    private String driverVersion;
+
+
     private static final Logger LOG = LogManager.getLogger(Engine.class.getName());
 
-    public Engine(String login, String pswrd, String searchWord, long likeCount, boolean shadowMode) {
+    public Engine(String login,
+                  String pswrd,
+                  String searchWord,
+                  long likeCount,
+                  boolean shadowMode,
+                  boolean updateDriver,
+                  String driverVersion) {
         sendLogMsg("Start liking");
         random = new Random();
         ps = new PrimarySettings(login, pswrd, searchWord, likeCount);
+        this.shadowMode = shadowMode;
+        this.updateDriver = updateDriver;
+        this.driverVersion = driverVersion;
         browserSetUp(shadowMode);
         urlInit();
         xpathsInit();
@@ -65,21 +95,6 @@ public class Engine {
 
 
     /**
-     * Не используется в gui версии приложения.
-     */
-    public Engine() {
-        random = new Random();
-        ps = new PrimarySettings();
-        browserSetUp(false);
-        urlInit();
-        xpathsInit();
-        login();
-        new Like(this, chrome);
-
-    }
-
-
-    /**
      * Setups for browser (chrome)
      */
     private void browserSetUp(boolean shadowMode) {
@@ -94,7 +109,7 @@ public class Engine {
         installChromeDriver(path);
 
         System.setProperty(WEBDRIVER_CHROME_DRIVER, path);
-        Capabilities capabilities;
+        Capabilities capabilities = null;
         ChromeDriver testDriver = null;
         String currentDriverVersion;
         String currentBrowserVersion;
@@ -103,21 +118,22 @@ public class Engine {
             capabilities = testDriver.getCapabilities();
             LOG.info(capabilities.getVersion() + "RAW 102");
 
-            currentDriverVersion = capabilities.getVersion(); //get current driver version
+            Map<String, String> a = (Map<String, String>) capabilities.getCapability("chrome");
             currentBrowserVersion = chromeVersion(); //get current browser version
 
             sendLogMsg("Current browser version: " + currentBrowserVersion);
-            sendLogMsg("Current driver version: " + currentDriverVersion);
+            sendLogMsg("Current driver version: " + a.get("chromedriverVersion"));
 
-            if (!currentBrowserVersion.equals(currentDriverVersion)) {
-                downloadAndInstallNewDriverVersion(path, currentBrowserVersion, shadowMode);
+            if (updateDriver) {
+                downloadAndInstallNewDriverVersion(path);
             } else {
                 chrome = getChromeWithOptions(shadowMode);
             }
 
         } catch (Exception e) {
-            LOG.info("Версии разные");
-            downloadAndInstallNewDriverVersion(path, chromeVersion(), shadowMode);
+            LOG.info(e.getMessage());
+            e.printStackTrace();
+            downloadAndInstallNewDriverVersion(path);
         } finally {
             if (testDriver != null) {
                 testDriver.quit();
@@ -127,7 +143,7 @@ public class Engine {
         chrome.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
 
-    private void downloadAndInstallNewDriverVersion(String path, String currentBrowserVersion, boolean shadowMode) {
+    private void downloadAndInstallNewDriverVersion(String path) {
         try {
             if (new File(path).delete()) {
                 sendLogMsg("Old driver deleted");
@@ -137,9 +153,9 @@ public class Engine {
             sendLogMsg("Start downloading new chromedriver.exe");
             URL driverDownloadUrl =
                     new URL(String.format("https://chromedriver.storage.googleapis.com/%s/chromedriver_win32.zip",
-                            currentBrowserVersion));
+                            driverVersion));
             sendLogMsg(String.format("https://chromedriver.storage.googleapis.com/%s/chromedriver_win32.zip",
-                    currentBrowserVersion));
+                    driverVersion));
 
             File downloadedDriverInZip = new File(Controller.dir.getPath() + "/chromedriver_win32");
             FileUtils.copyURLToFile(driverDownloadUrl, downloadedDriverInZip);
@@ -158,13 +174,13 @@ public class Engine {
     }
 
     private ChromeDriver getChromeWithOptions(boolean shadowMode) {
+        ChromeOptions options = new ChromeOptions();
         if (shadowMode) {
-            ChromeOptions options = new ChromeOptions();
             options.addArguments("headless");
-            return new ChromeDriver(options);
         } else {
-            return new ChromeDriver();
+            options.addExtensions(new File("C:\\Users\\root\\Desktop\\vpn.zip"));
         }
+        return new ChromeDriver(options);
     }
 
     private String chromeVersion() {

@@ -25,6 +25,8 @@ public class Controller implements Initializable {
     public TextArea userMessage;
     public TextField messageCount;
     public CheckBox shadowMode;
+    public CheckBox updateDriver;
+    public TextField driverVersion;
     private Properties prop;
     private File file;
     public static File dir;
@@ -68,7 +70,11 @@ public class Controller implements Initializable {
             new Thread(() -> new Engine(loginField.getText(),
                     passwordField.getText(),
                     searchWordField.getText(),
-                    Long.parseLong(likesCount.getText()), shadowMode.isSelected())).start();
+                    Long.parseLong(likesCount.getText()),
+                    shadowMode.isSelected(),
+                    updateDriver.isSelected(),
+                    driverVersion.getText())
+            ).start();
         } else {
             guiLOG.appendText("Неверные данные для входа!\r\n");
         }
